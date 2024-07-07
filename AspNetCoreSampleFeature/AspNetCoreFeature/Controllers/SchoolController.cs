@@ -1,4 +1,5 @@
-﻿using AspNetCoreFeature.Models.Request;
+﻿using System.Net;
+using AspNetCoreFeature.Models.Request;
 using AspNetCoreFeature.Models.Response;
 using AspNetCoreFeature.Services;
 using AspNetCoreFeature.Models;
@@ -97,10 +98,14 @@ public class SchoolController : ControllerBase
     /// <summary>
     /// 取得學校
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <param name="id">學校id</param>
+    /// <returns>學校資料</returns>
     [HttpGet]
     [Route("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(ApiResponse<GetSchoolResponse>),StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSchool([FromRoute] string id)
     {
         var school = await _schoolService.GetSchoolAsync(id);
@@ -108,13 +113,17 @@ public class SchoolController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(new
+        return Ok(new ApiResponse<GetSchoolResponse>
         {
             Status = true,
-            Data = new GetSchoolResponse{ Id = school.Id, Name = school.Name }
+            Message = "成功",
+            Result = new GetSchoolResponse
+            {
+                Id = school.Id,
+                Name = school.Name
+            }
         });
     }
-
     /// <summary>
     /// 新增學生到班級
     /// </summary>
