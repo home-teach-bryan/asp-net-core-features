@@ -39,6 +39,7 @@ public class TokenController : ControllerBase
             return BadRequest("帳號或密碼錯誤");
         }
         var token = _jwtTokenGenerator.GenerateJwtToken(user.Id, user.Name, user.Roles);
+        throw new Exception("測試拋出例外");
         return Ok(token);
     }
 
@@ -48,7 +49,7 @@ public class TokenController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpGet]
-    [Route("roles")]
+    [Route("Roles")]
     public IActionResult GetRoles()
     {
         var roleClaim = base.HttpContext.User.Claims.Where(item => item.Type == ClaimTypes.Role);

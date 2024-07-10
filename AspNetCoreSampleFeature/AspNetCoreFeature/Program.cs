@@ -8,6 +8,7 @@ using AspNetCoreFeature.ActionFilter;
 using AspNetCoreFeature.HealthCheck;
 using AspNetCoreFeature.Interceptor;
 using AspNetCoreFeature.Jwt;
+using AspNetCoreFeature.Middleware;
 using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
@@ -59,6 +60,7 @@ public class Program
         builder.Services.AddHttpLoggingInterceptor<HttpLoggingInterceptor>();
         
         var app = builder.Build();
+        app.UseMiddleware<ExceptionMiddleware>();
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
             ResponseWriter = (httpContext, healthReport) =>
