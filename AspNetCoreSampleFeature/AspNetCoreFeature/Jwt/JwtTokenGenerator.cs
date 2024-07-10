@@ -21,16 +21,19 @@ public class JwtTokenGenerator
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Value.SignKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        
+        
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(ClaimTypes.Name, userName),
-            new Claim(ClaimTypes.Role, string.Join(",", roles))
+            new Claim(ClaimTypes.Name, userName)
         };
+        var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+        claims.AddRange(roleClaims);
         var token = new JwtSecurityToken(
             issuer: this._jwtSettings.Value.Issuer,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
+            expires: DateTime.Now.AddHours(1),
             signingCredentials: credentials);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

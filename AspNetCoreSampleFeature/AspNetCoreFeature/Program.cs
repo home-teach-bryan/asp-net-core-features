@@ -31,6 +31,27 @@ public class Program
             });
             var xmlFileName = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
             item.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+
+            item.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "JWT Authorization header using the Bearer scheme."
+            });
+
+            var requirement = new OpenApiSecurityRequirement();
+            requirement.Add(new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme, Id = "bearerAuth"
+                    }
+                },
+                new string[] { }
+            );
+                
+            item.AddSecurityRequirement(requirement);
         });
         builder.Services.AddSingleton<IProductService, ProductService>();
         builder.Services.AddSingleton<IUserService, UserService>();
@@ -49,10 +70,11 @@ public class Program
                     ValidateIssuerSigningKey = false,
                     IssuerSigningKey =
                         new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SignKey")))
+                            Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SignKey"))),
+                    ClockSkew = TimeSpan.Zero
+                    
                 };
             });
-
 
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
         var app = builder.Build();

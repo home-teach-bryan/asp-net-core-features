@@ -1,4 +1,5 @@
-﻿using AspNetCoreFeature.Jwt;
+﻿using System.Security.Claims;
+using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Models.Request;
 using AspNetCoreFeature.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -39,5 +40,18 @@ public class TokenController : ControllerBase
         }
         var token = _jwtTokenGenerator.GenerateJwtToken(user.Id, user.Name, user.Roles);
         return Ok(token);
+    }
+
+    /// <summary>
+    /// 取得角色
+    /// </summary>
+    /// <returns></returns>
+    [Authorize]
+    [HttpGet]
+    [Route("roles")]
+    public IActionResult GetRoles()
+    {
+        var roleClaim = base.HttpContext.User.Claims.Where(item => item.Type == ClaimTypes.Role);
+        return Ok(roleClaim.Select(item => item.Value));
     }
 }

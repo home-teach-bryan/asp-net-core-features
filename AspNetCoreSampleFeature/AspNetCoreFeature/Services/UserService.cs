@@ -6,7 +6,7 @@ public class UserService : IUserService
 {
     private List<User> _users = new List<User>
     {
-        new User { Id = Guid.NewGuid(), Name = "user1", Password = "123456", Roles = new[] { "Admin,User" } },
+        new User { Id = Guid.NewGuid(), Name = "user1", Password = "123456", Roles = new[] { "Admin", "User" } },
         new User { Id = Guid.NewGuid(), Name = "user2", Password = "456789", Roles = new[] { "User" } },
     };
 

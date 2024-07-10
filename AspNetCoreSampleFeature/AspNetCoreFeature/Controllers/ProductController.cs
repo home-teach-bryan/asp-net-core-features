@@ -35,6 +35,7 @@ public class ProductController : ControllerBase
     /// <returns>回傳執行結果</returns>
     [HttpPost]
     [Route("")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AddProduct([FromBody] AddProductRequest request)
     {
         var result = _productService.AddProduct(request);
