@@ -2,6 +2,7 @@
 using AspNetCoreFeature.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AspNetCoreFeature.Controllers;
 
@@ -75,6 +76,7 @@ public class ProductController : ControllerBase
     /// <returns>產品清單</returns>
     [HttpGet]
     [Route("")]
+    [EnableRateLimiting("FixedWindows")]
     public IActionResult GetProducts()
     {
         var result = _productService.GetAllProducts();
