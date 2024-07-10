@@ -1,6 +1,11 @@
 using System.Reflection;
+using System.Text;
+using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Services;
+using AspNetCoreSample.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace AspNetCoreFeature;
@@ -28,6 +33,28 @@ public class Program
             item.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
         });
         builder.Services.AddSingleton<IProductService, ProductService>();
+        builder.Services.AddSingleton<IUserService, UserService>();
+        builder.Services.AddSingleton<JwtTokenGenerator>();
+        
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, option =>
+            {
+                option.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer"),
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = false,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SignKey")))
+                };
+            });
+
+
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -37,7 +64,10 @@ public class Program
             app.UseSwaggerUI();
         }
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
+        
+        
         app.MapControllers();
         app.Run();
     }

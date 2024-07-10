@@ -1,5 +1,6 @@
 ﻿using AspNetCoreFeature.Models.Request;
 using AspNetCoreFeature.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreFeature.Controllers;
@@ -7,6 +8,7 @@ namespace AspNetCoreFeature.Controllers;
 /// <summary>
 /// 產品控制器
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ProductController : ControllerBase
