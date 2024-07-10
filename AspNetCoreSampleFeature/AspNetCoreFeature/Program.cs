@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.RateLimiting;
 using AspNetCoreFeature.ActionFilter;
 using AspNetCoreFeature.HealthCheck;
+using AspNetCoreFeature.Interceptor;
 using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
@@ -52,6 +53,10 @@ public class Program
 
         // health check
         builder.Services.AddCustomHealthCheck();
+        // http logging
+        builder.Services.AddCustomHttpLogging();
+        builder.Services.AddHttpLoggingInterceptor<HttpLoggingInterceptor>();
+        
         var app = builder.Build();
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
@@ -79,6 +84,7 @@ public class Program
             app.UseSwaggerUI();
         }
         app.UseHttpsRedirection();
+        app.UseHttpLogging();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseRateLimiter();
