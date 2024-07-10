@@ -4,12 +4,16 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.RateLimiting;
+using AspNetCoreFeature.HealthCheck;
 using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -26,6 +30,8 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
+        
+        // swagger document spec 
         builder.Services.AddSwaggerGen(item =>
         {
             item.SwaggerDoc("v1", new OpenApiInfo
@@ -63,6 +69,7 @@ public class Program
         builder.Services.AddSingleton<JwtTokenGenerator>();
         
 
+        // jwt authentication setting
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, option =>
             {
@@ -83,6 +90,7 @@ public class Program
 
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
+        // rate limit
         builder.Services.AddRateLimiter(options =>
         {
             options.OnRejected = (context, cancellationToken) =>
@@ -107,7 +115,32 @@ public class Program
                 }
             ));
         });
+
+        // health check
+        builder.Services.AddHealthChecks().AddCheck("DataBaseHealthCheck",
+            new DataBaseHealthCheck("ConnectionString"),
+            HealthStatus.Unhealthy,
+            new string[] { "DataBaseHealthCheck" });
         var app = builder.Build();
+
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            ResponseWriter = (httpContext, healthReport) =>
+            {
+                var result = new
+                {
+                    health = Enum.Parse<HealthStatus>(healthReport.Status.ToString()).ToString(),
+                    services = healthReport.Entries.Select(item => new
+                    {
+                        name = item.Key,
+                        health = Enum.Parse<HealthStatus>(item.Value.Status.ToString()).ToString()
+                    })
+                };
+                httpContext.Response.ContentType = "application/json";
+                var json = System.Text.Json.JsonSerializer.Serialize(result);
+                return httpContext.Response.WriteAsync(json);
+            }
+        });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
