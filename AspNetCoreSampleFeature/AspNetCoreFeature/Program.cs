@@ -4,8 +4,10 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.RateLimiting;
+using AspNetCoreFeature.ActionFilter;
 using AspNetCoreFeature.HealthCheck;
 using AspNetCoreFeature.Jwt;
+using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,102 +29,30 @@ public class Program
 
         // Add services to the container.
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(option =>
+        {
+            option.Filters.Add<ApiResponseActionFilter>();
+        });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        
+        builder.Services.Configure<ApiBehaviorOptions>(item => item.SuppressModelStateInvalidFilter = true);
         // swagger document spec 
-        builder.Services.AddSwaggerGen(item =>
-        {
-            item.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "產品管理系統API",
-                Description = "產品管理系統API",
-            });
-            var xmlFileName = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
-            item.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
-
-            item.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                Description = "JWT Authorization header using the Bearer scheme."
-            });
-
-            var requirement = new OpenApiSecurityRequirement();
-            requirement.Add(new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme, Id = "bearerAuth"
-                    }
-                },
-                new string[] { }
-            );
-                
-            item.AddSecurityRequirement(requirement);
-        });
+        builder.Services.AddCustomSwaggerGen();
         builder.Services.AddSingleton<IProductService, ProductService>();
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<JwtTokenGenerator>();
         
-
         // jwt authentication setting
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, option =>
-            {
-                option.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer"),
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = false,
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SignKey"))),
-                    ClockSkew = TimeSpan.Zero
-                    
-                };
-            });
+        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
         // rate limit
-        builder.Services.AddRateLimiter(options =>
-        {
-            options.OnRejected = (context, cancellationToken) =>
-            {
-                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-                {
-                    context.HttpContext.Response.Headers.RetryAfter = retryAfter.ToString();
-                }
-                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                context.HttpContext.Response.WriteAsJsonAsync(new { message = "Too many requests" });
-                return ValueTask.CompletedTask;
-            };
-            options.AddPolicy("FixedWindows", httpContext => RateLimitPartition.GetFixedWindowLimiter(
-                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ??
-                              httpContext.Request.Headers.Host.ToString(),
-                factory: _ => new FixedWindowRateLimiterOptions()
-                {
-                    PermitLimit = 5,
-                    Window = TimeSpan.FromSeconds(15),
-                    //options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst; //若達到限速條件時 後面進來的Request排入佇列 並決定從哪邊處理
-                    //options.QueueLimit = 0; // 可進佇列等待的要求數    
-                }
-            ));
-        });
+        builder.Services.AddCustomRateLimiter();
 
         // health check
-        builder.Services.AddHealthChecks().AddCheck("DataBaseHealthCheck",
-            new DataBaseHealthCheck("ConnectionString"),
-            HealthStatus.Unhealthy,
-            new string[] { "DataBaseHealthCheck" });
+        builder.Services.AddCustomHealthCheck();
         var app = builder.Build();
-
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
             ResponseWriter = (httpContext, healthReport) =>
@@ -152,7 +82,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseRateLimiter();
-        
+
         app.MapControllers();
         app.Run();
     }
