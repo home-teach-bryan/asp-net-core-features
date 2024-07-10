@@ -36,7 +36,7 @@ public class TokenController : ControllerBase
         var (isValid, user) = _userService.IsValid(request.Name, request.Password);
         if (!isValid)
         {
-            return BadRequest();
+            return BadRequest("帳號或密碼錯誤");
         }
         var token = _jwtTokenGenerator.GenerateJwtToken(user.Id, user.Name, user.Roles);
         return Ok(token);

@@ -32,6 +32,7 @@ public class Program
 
         builder.Services.AddControllers(option =>
         {
+            option.Filters.Add<ValidationModelActionFilter>();
             option.Filters.Add<ApiResponseActionFilter>();
         });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
