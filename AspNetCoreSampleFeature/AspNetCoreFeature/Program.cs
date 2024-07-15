@@ -1,9 +1,11 @@
 using AspNetCoreFeature.ActionFilter;
+using AspNetCoreFeature.Jobs;
 using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Middleware;
 using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -14,11 +16,9 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
-
         try
         {
             Log.Information("Starting Web Application");
@@ -50,8 +50,17 @@ public class Program
             builder.Services.AddCustomHealthCheck();
             // logging
             builder.Services.AddSerilog();
+            
+            // hangfire
+            builder.Services.AddHangfire(option => option.UseInMemoryStorage());
+            builder.Services.AddHangfireServer();
+            builder.Services.AddSingleton<HangFireJobManager>();
 
             var app = builder.Build();
+
+            var jobManager = app.Services.GetRequiredService<HangFireJobManager>();
+            jobManager.RegisterJobs();
+            
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseCustomHealthCheck();
             
@@ -61,6 +70,8 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseHangfireDashboard("/hangfire");
             app.UseHttpsRedirection();
             app.UseSerilogRequestLogging();
             app.UseMiddleware<HttpLoggingMiddleware>();
@@ -68,6 +79,7 @@ public class Program
             app.UseAuthorization();
             app.UseRateLimiter();
             app.MapControllers();
+            
             app.Run();
         }
         catch (Exception ex)
