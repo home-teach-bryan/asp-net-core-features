@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
+using AspNetCoreFeature.Extension;
 using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Models.Request;
 using AspNetCoreFeature.Services;
+using AspNetCoreSample.Models.Enum;
+using AspNetCoreSample.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +25,7 @@ public class TokenController : ControllerBase
         _userService = userService;
         _jwtTokenGenerator = jwtTokenGenerator;
     }
-    
+
     /// <summary>
     /// 取得Token
     /// </summary>
@@ -36,23 +39,39 @@ public class TokenController : ControllerBase
         var (isValid, user) = _userService.IsValid(request.Name, request.Password);
         if (!isValid)
         {
-            return BadRequest("帳號或密碼錯誤");
+            return BadRequest(new ApiResponse<object>(ApiResponseStatus.UserNotFound)
+            {
+                Data = null
+            });
         }
         var token = _jwtTokenGenerator.GenerateJwtToken(user.Id, user.Name, user.Roles);
-        throw new Exception("測試拋出例外");
-        return Ok(token);
+        return Ok(new ApiResponse<object>(ApiResponseStatus.Success)
+        {
+            Data = token
+        });
     }
 
     /// <summary>
     /// 取得角色
     /// </summary>
-    /// <returns></returns>
+    /// <returns>角色清單</returns>
     [Authorize]
     [HttpGet]
     [Route("Roles")]
     public IActionResult GetRoles()
     {
         var roleClaim = base.HttpContext.User.Claims.Where(item => item.Type == ClaimTypes.Role);
-        return Ok(roleClaim.Select(item => item.Value));
+        if (!roleClaim.Any())
+        {
+            return BadRequest(new ApiResponse<object>(ApiResponseStatus.Fail)
+            {
+                Data = null
+            });
+        }
+        var roles = roleClaim.Select(item => item.Value);
+        return Ok(new ApiResponse<IEnumerable<string>>(ApiResponseStatus.Success)
+        {
+            Data = roles
+        });
     }
 }

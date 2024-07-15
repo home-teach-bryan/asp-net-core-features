@@ -1,25 +1,14 @@
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.RateLimiting;
 using AspNetCoreFeature.ActionFilter;
-using AspNetCoreFeature.HealthCheck;
-using AspNetCoreFeature.Interceptor;
 using AspNetCoreFeature.Jwt;
 using AspNetCoreFeature.Middleware;
 using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Serilog;
+
 
 namespace AspNetCoreFeature;
 
@@ -28,71 +17,68 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
-
-        builder.Services.AddControllers(option =>
-        {
-            option.Filters.Add<ValidationModelActionFilter>();
-            option.Filters.Add<ApiResponseActionFilter>();
-        });
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.Configure<ApiBehaviorOptions>(item => item.SuppressModelStateInvalidFilter = true);
-        // swagger document spec 
-        builder.Services.AddCustomSwaggerGen();
-        builder.Services.AddSingleton<IProductService, ProductService>();
-        builder.Services.AddSingleton<IUserService, UserService>();
-        builder.Services.AddSingleton<JwtTokenGenerator>();
         
-        // jwt authentication setting
-        builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .CreateLogger();
 
-        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
-        // rate limit
-        builder.Services.AddCustomRateLimiter();
-
-        // health check
-        builder.Services.AddCustomHealthCheck();
-        // http logging
-        builder.Services.AddCustomHttpLogging();
-        builder.Services.AddHttpLoggingInterceptor<HttpLoggingInterceptor>();
-        
-        var app = builder.Build();
-        app.UseMiddleware<ExceptionMiddleware>();
-        app.MapHealthChecks("/health", new HealthCheckOptions
+        try
         {
-            ResponseWriter = (httpContext, healthReport) =>
+            Log.Information("Starting Web Application");
+            
+            // Add services to the container.
+            builder.Services.AddControllers(option =>
             {
-                var result = new
-                {
-                    health = Enum.Parse<HealthStatus>(healthReport.Status.ToString()).ToString(),
-                    services = healthReport.Entries.Select(item => new
-                    {
-                        name = item.Key,
-                        health = Enum.Parse<HealthStatus>(item.Value.Status.ToString()).ToString()
-                    })
-                };
-                httpContext.Response.ContentType = "application/json";
-                var json = System.Text.Json.JsonSerializer.Serialize(result);
-                return httpContext.Response.WriteAsync(json);
+                option.Filters.Add<ValidationModelActionFilter>();
+            });
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.Configure<ApiBehaviorOptions>(item => item.SuppressModelStateInvalidFilter = true);
+            // swagger document spec 
+            builder.Services.AddCustomSwaggerGen();
+            builder.Services.AddSingleton<IProductService, ProductService>();
+            builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<JwtTokenGenerator>();
+
+            // jwt authentication setting
+            builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+            // rate limit
+            builder.Services.AddCustomRateLimiter();
+
+            // health check
+            builder.Services.AddCustomHealthCheck();
+            // http logging
+            builder.Services.AddSerilog();
+
+            var app = builder.Build();
+            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseCustomHealthCheck();
+            
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
-        });
-
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseHttpsRedirection();
+            app.UseSerilogRequestLogging();
+            app.UseMiddleware<HttpLoggingMiddleware>();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseRateLimiter();
+            app.MapControllers();
+            app.Run();
         }
-        app.UseHttpsRedirection();
-        app.UseHttpLogging();
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.UseRateLimiter();
-
-        app.MapControllers();
-        app.Run();
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application  terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 }

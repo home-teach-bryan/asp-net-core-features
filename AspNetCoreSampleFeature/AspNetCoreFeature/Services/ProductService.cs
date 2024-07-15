@@ -6,8 +6,7 @@ namespace AspNetCoreFeature.Services;
 public class ProductService : IProductService
 {
     private List<Product> _products = new List<Product>();
-
-
+    
     public bool AddProduct(AddProductRequest product)
     {
         if (_products.Any(item => item.Name == product.Name))

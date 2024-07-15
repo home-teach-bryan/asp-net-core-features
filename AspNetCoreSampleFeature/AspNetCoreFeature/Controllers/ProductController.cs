@@ -1,5 +1,8 @@
-﻿using AspNetCoreFeature.Models.Request;
+﻿using AspNetCoreFeature.Extension;
+using AspNetCoreFeature.Models.Request;
 using AspNetCoreFeature.Services;
+using AspNetCoreSample.Models.Enum;
+using AspNetCoreSample.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -28,19 +31,36 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-
     /// <summary>
     /// 新增產品
     /// </summary>
     /// <param name="request"></param>
     /// <returns>回傳執行結果</returns>
+    /// <response code="200">成功</response>
+    /// <response code="400">失敗</response>
     [HttpPost]
     [Route("")]
     [Authorize(Roles = "Admin")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType<ApiResponse<object>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<object>>(StatusCodes.Status400BadRequest)]
     public IActionResult AddProduct([FromBody] AddProductRequest request)
     {
         var result = _productService.AddProduct(request);
-        return Ok(result);
+        var status = result ? ApiResponseStatus.Success : ApiResponseStatus.Fail;
+
+        if (!result)
+        {
+            return BadRequest(new ApiResponse<object>(status)
+            {
+                Data = null,
+            });
+        }
+        return Ok(new ApiResponse<object>(status)
+        {
+            Data = null,
+        });
     }
 
     /// <summary>
@@ -54,7 +74,11 @@ public class ProductController : ControllerBase
     public IActionResult UpdateProduct([FromRoute] Guid id, [FromBody] UpdateProductRequest request)
     {
         var result = _productService.UpdateProduct(id, request);
-        return Ok(result);
+        var status = result ? ApiResponseStatus.Success : ApiResponseStatus.Fail;
+        return Ok(new ApiResponse<object>(status)
+        {
+            Data = null,
+        });
     }
 
     /// <summary>
@@ -67,7 +91,11 @@ public class ProductController : ControllerBase
     public IActionResult DeleteProduct([FromRoute] Guid id)
     {
         var result = _productService.RemoveProduct(id);
-        return Ok(result);
+        var status = result ? ApiResponseStatus.Success : ApiResponseStatus.Fail;
+        return Ok(new ApiResponse<object>(status)
+        {
+            Data = null,
+        });
     }
 
     /// <summary>
@@ -80,7 +108,10 @@ public class ProductController : ControllerBase
     public IActionResult GetProducts()
     {
         var result = _productService.GetAllProducts();
-        return Ok(result);
+        return Ok(new ApiResponse<object>(ApiResponseStatus.Success)
+        {
+            Data = result,
+        });
     }
 
     /// <summary>
@@ -93,6 +124,9 @@ public class ProductController : ControllerBase
     public IActionResult GetProduct([FromRoute] Guid id)
     {
         var result = _productService.GetProduct(id);
-        return Ok(result);
+        return Ok(new ApiResponse<object>(ApiResponseStatus.Success)
+        {
+            Data = result,
+        });
     }
 }

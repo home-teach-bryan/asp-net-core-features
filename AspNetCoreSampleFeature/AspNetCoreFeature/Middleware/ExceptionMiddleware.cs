@@ -33,10 +33,8 @@ public class ExceptionMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-        var response = new ApiResponse<object>()
+        var response = new ApiResponse<object>(ApiResponseStatus.Error)
         {
-            Status = ApiResponseStatus.Fail,
-            Message = ApiResponseStatus.Fail.GetDescription(),
             Errors = new List<string>() { exception.Message },
             Data = null,
         };
