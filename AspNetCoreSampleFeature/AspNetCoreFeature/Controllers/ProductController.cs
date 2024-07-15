@@ -1,8 +1,8 @@
 ﻿using AspNetCoreFeature.Extension;
+using AspNetCoreFeature.Models.Enum;
 using AspNetCoreFeature.Models.Request;
+using AspNetCoreFeature.Models.Response;
 using AspNetCoreFeature.Services;
-using AspNetCoreSample.Models.Enum;
-using AspNetCoreSample.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;

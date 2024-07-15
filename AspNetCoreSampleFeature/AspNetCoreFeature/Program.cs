@@ -4,11 +4,8 @@ using AspNetCoreFeature.Middleware;
 using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
-
 
 namespace AspNetCoreFeature;
 
@@ -50,7 +47,7 @@ public class Program
 
             // health check
             builder.Services.AddCustomHealthCheck();
-            // http logging
+            // logging
             builder.Services.AddSerilog();
 
             var app = builder.Build();

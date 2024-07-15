@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using AspNetCoreSample.Models.Enum;
+using AspNetCoreFeature.Models.Enum;
 
 namespace AspNetCoreFeature.Extension;
 

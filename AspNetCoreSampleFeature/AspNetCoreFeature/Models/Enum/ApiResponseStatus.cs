@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace AspNetCoreSample.Models.Enum;
+namespace AspNetCoreFeature.Models.Enum;
 
 public enum ApiResponseStatus
 {

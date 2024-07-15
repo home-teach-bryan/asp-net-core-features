@@ -1,7 +1,7 @@
 ﻿using AspNetCoreFeature.Extension;
-using AspNetCoreSample.Models.Enum;
+using AspNetCoreFeature.Models.Enum;
 
-namespace AspNetCoreSample.Models.Response;
+namespace AspNetCoreFeature.Models.Response;
 
 public class ApiResponse<T>
 {

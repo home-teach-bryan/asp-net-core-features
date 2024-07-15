@@ -1,6 +1,5 @@
-﻿using AspNetCoreFeature.Extension;
-using AspNetCoreSample.Models.Enum;
-using AspNetCoreSample.Models.Response;
+﻿using AspNetCoreFeature.Models.Enum;
+using AspNetCoreFeature.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

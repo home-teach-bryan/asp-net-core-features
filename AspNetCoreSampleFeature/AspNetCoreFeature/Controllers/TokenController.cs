@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
 using AspNetCoreFeature.Extension;
 using AspNetCoreFeature.Jwt;
+using AspNetCoreFeature.Models.Enum;
 using AspNetCoreFeature.Models.Request;
+using AspNetCoreFeature.Models.Response;
 using AspNetCoreFeature.Services;
-using AspNetCoreSample.Models.Enum;
-using AspNetCoreSample.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
