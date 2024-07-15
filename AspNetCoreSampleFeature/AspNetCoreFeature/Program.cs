@@ -30,7 +30,8 @@ public class Program
             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.Configure<ApiBehaviorOptions>(item => item.SuppressModelStateInvalidFilter = true);
+            builder.Services.Configure<ApiBehaviorOptions>(
+                item => item.SuppressModelStateInvalidFilter = true);
             // swagger document spec 
             builder.Services.AddCustomSwaggerGen();
             builder.Services.AddSingleton<IProductService, ProductService>();
