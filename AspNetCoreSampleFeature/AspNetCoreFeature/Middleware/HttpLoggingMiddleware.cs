@@ -23,7 +23,7 @@ public class HttpLoggingMiddleware
         using var requestStreamReader = new StreamReader(requestBodyStream);
         var requestBodyText = await requestStreamReader.ReadToEndAsync();
 
-        if (context.Request.ContentType == "application/json")
+        if (context.Request.ContentType == "application/json" && context.Request.Path == "/api/Token")
         {
             requestBodyText = MakePasswordMasked(requestBodyText);
         }
