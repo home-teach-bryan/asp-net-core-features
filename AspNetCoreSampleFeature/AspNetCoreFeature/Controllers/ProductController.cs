@@ -52,15 +52,9 @@ public class ProductController : ControllerBase
 
         if (!result)
         {
-            return BadRequest(new ApiResponse<object>(status)
-            {
-                Data = null,
-            });
+            return BadRequest(new ApiResponse<object>(status));
         }
-        return Ok(new ApiResponse<object>(status)
-        {
-            Data = null,
-        });
+        return Ok(new ApiResponse<object>(status));
     }
 
     /// <summary>
@@ -75,10 +69,7 @@ public class ProductController : ControllerBase
     {
         var result = _productService.UpdateProduct(id, request);
         var status = result ? ApiResponseStatus.Success : ApiResponseStatus.Fail;
-        return Ok(new ApiResponse<object>(status)
-        {
-            Data = null,
-        });
+        return Ok(new ApiResponse<object>(status));
     }
 
     /// <summary>
@@ -92,10 +83,7 @@ public class ProductController : ControllerBase
     {
         var result = _productService.RemoveProduct(id);
         var status = result ? ApiResponseStatus.Success : ApiResponseStatus.Fail;
-        return Ok(new ApiResponse<object>(status)
-        {
-            Data = null,
-        });
+        return Ok(new ApiResponse<object>(status));
     }
 
     /// <summary>

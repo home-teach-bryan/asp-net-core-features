@@ -70,7 +70,6 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHangfireDashboard("/hangfire");
             app.UseHttpsRedirection();
             app.UseSerilogRequestLogging();
