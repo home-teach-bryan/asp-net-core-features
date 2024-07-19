@@ -20,9 +20,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-          
+
       - name: Dotnet Build
-        run: dotnet build --no-store --project .\asp-net-core-features\AspNetCoreSampleFeature\AspNetCoreFeature.csproj
+        run: dotnet build "AspNetCoreSampleFeature\AspNetCoreFeature\AspNetCoreFeature.csproj"
 
       - name: Dotnet Test
         run: dotnet test --no-build --verbosity normal
