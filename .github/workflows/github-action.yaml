@@ -31,13 +31,13 @@ jobs:
 
       - name: echo 
         run: echo "$secrets.TOKEN"
-        
+
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
             context: ./AspNetCoreSampleFeature/AspNetCoreFeature
             push: true
-            tags: home-teach-bryan/asp-net-ore-feature:latest
+            tags: ghcr.io/home-teach-bryan/asp-net-ore-feature:latest
 
 
       
