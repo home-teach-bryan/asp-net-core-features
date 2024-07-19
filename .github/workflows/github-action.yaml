@@ -7,7 +7,7 @@ name: GitHub Action CI/CD Workflow
 on: 
     push:
         branches:
-            - main
+            - master
 jobs:
   build:
     runs-on: ubuntu-latest
