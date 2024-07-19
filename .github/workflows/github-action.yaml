@@ -20,12 +20,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
           
       - name: Dotnet Build
-        run: dotnet build --project .\asp-net-core-features\AspNetCoreSampleFeature\AspNetCoreFeature
+        run: dotnet build --no-store --project .\asp-net-core-features\AspNetCoreSampleFeature\AspNetCoreFeature.csproj
 
       - name: Dotnet Test
-        run: dotnet test 
+        run: dotnet test --no-build --verbosity normal
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
