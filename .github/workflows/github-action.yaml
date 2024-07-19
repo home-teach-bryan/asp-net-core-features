@@ -34,7 +34,7 @@ jobs:
         with:
             context: ./AspNetCoreSampleFeature/AspNetCoreFeature
             push: true
-            tags: asp-net-ore-feature:latest
+            tags: home-teach-bryan/asp-net-ore-feature:latest
 
 
       
