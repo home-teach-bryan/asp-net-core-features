@@ -6,7 +6,6 @@ namespace AspNetCoreFeatureTests;
 
 public class ProductServiceTests
 {
-    
     private ProductService _productService;
     [SetUp]
     public void Setup()

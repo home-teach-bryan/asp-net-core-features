@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreFeature", "AspNetCoreFeature\AspNetCoreFeature.csproj", "{BB860765-3D0F-48A7-8979-7B9C5CEEA28B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreFeatureTests", "AspNetCoreFeatureTests\AspNetCoreFeatureTests.csproj", "{D58F6CD9-6BFD-4C82-9A66-1B13E7106ADA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreFeatureTests", "AspNetCoreFeatureTests\AspNetCoreFeatureTests\AspNetCoreFeatureTests.csproj", "{AC3559C2-C134-4425-A503-D26F4750131E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{BB860765-3D0F-48A7-8979-7B9C5CEEA28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB860765-3D0F-48A7-8979-7B9C5CEEA28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB860765-3D0F-48A7-8979-7B9C5CEEA28B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D58F6CD9-6BFD-4C82-9A66-1B13E7106ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D58F6CD9-6BFD-4C82-9A66-1B13E7106ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D58F6CD9-6BFD-4C82-9A66-1B13E7106ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D58F6CD9-6BFD-4C82-9A66-1B13E7106ADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC3559C2-C134-4425-A503-D26F4750131E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC3559C2-C134-4425-A503-D26F4750131E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC3559C2-C134-4425-A503-D26F4750131E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC3559C2-C134-4425-A503-D26F4750131E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
