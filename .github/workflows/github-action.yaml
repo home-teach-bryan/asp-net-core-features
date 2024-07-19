@@ -32,7 +32,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
-            context: .
+            context: ./AspNetCoreSampleFeature/AspNetCoreFeature
             push: true
             tags: asp-net-ore-feature:latest
 
