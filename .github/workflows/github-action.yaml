@@ -14,7 +14,19 @@ jobs:
     environment: development
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+          cache: true
+
+      - name: Dotnet Build
+        run: dotnet build
+
+      - name: Dotnet Test
+        run: dotnet test 
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
