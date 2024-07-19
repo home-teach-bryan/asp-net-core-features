@@ -25,7 +25,7 @@ jobs:
         run: dotnet build "AspNetCoreSampleFeature\AspNetCoreFeature\AspNetCoreFeature.csproj"
 
       - name: Dotnet Test
-        run: dotnet test "AspNetCoreSampleFeature\AspNetCoreFeatureTests\AspNetCoreFeatureTests\AspNetCoreFeatureTests.csproj" --no-build --verbosity normal 
+        run: dotnet test "AspNetCoreSampleFeature\AspNetCoreFeatureTests\AspNetCoreFeatureTests\AspNetCoreFeatureTests.csproj"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
