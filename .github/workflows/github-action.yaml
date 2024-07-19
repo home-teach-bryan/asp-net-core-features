@@ -19,9 +19,9 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.x'
+          dotnet-version: '8.x'
           cache: true
-      - run: dotnet restore --locked-mode 
+          cache-depency-path: '**/packages.locks.json'
 
       - name: Dotnet Build
         run: dotnet build
