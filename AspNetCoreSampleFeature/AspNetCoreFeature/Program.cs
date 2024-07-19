@@ -6,6 +6,7 @@ using AspNetCoreFeature.ServiceCollection;
 using AspNetCoreFeature.Services;
 using AspNetCoreSample.Models;
 using Hangfire;
+using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -22,12 +23,9 @@ public class Program
         try
         {
             Log.Information("Starting Web Application");
-            
+
             // Add services to the container.
-            builder.Services.AddControllers(option =>
-            {
-                option.Filters.Add<ValidationModelActionFilter>();
-            });
+            builder.Services.AddControllers(option => { option.Filters.Add<ValidationModelActionFilter>(); });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.Configure<ApiBehaviorOptions>(
@@ -50,7 +48,7 @@ public class Program
             builder.Services.AddCustomHealthCheck();
             // logging
             builder.Services.AddSerilog();
-            
+
             // hangfire
             builder.Services.AddHangfire(option => option.UseInMemoryStorage());
             builder.Services.AddHangfireServer();
@@ -60,17 +58,16 @@ public class Program
 
             var jobManager = app.Services.GetRequiredService<HangFireJobManager>();
             jobManager.RegisterJobs();
-            
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseCustomHealthCheck();
-            
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseHangfireDashboard("/hangfire", options: new DashboardOptions()
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-            app.UseHangfireDashboard("/hangfire");
+                Authorization = new List<IDashboardAuthorizationFilter>{ new HangFireDashboardActionFilter() }
+            });
             app.UseHttpsRedirection();
             app.UseSerilogRequestLogging();
             app.UseMiddleware<HttpLoggingMiddleware>();
@@ -78,7 +75,7 @@ public class Program
             app.UseAuthorization();
             app.UseRateLimiter();
             app.MapControllers();
-            
+
             app.Run();
         }
         catch (Exception ex)
