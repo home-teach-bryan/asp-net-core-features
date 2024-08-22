@@ -37,3 +37,6 @@ az ad sp create-for-rbac --name "myApp" --role contributor --scopes /subscriptio
 - 登入Azure (使用先設定於Secrets中的登入憑證)
 - 佈署App Service (推送image到App Service中)
 - 登出Azure
+
+
+測試PR
