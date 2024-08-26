@@ -33,10 +33,11 @@
 az ad sp create-for-rbac --name "myApp" --role contributor --scopes /subscriptions/<subscription-id>/resourceGroups/<group-name>/providers/Microsoft.Web/sites/<app-name> --json-auth
 ```
 
+
 ### GitHub Action Workflow
 - 登入Azure (使用先設定於Secrets中的登入憑證)
 - 佈署App Service (推送image到App Service中)
 - 登出Azure
 
 
-測試PR
+--測試PR
