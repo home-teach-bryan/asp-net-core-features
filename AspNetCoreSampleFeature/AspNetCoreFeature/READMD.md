@@ -23,9 +23,11 @@
 ### Azure App Service
 - 先建立Azure App Service
     - 佈署方式選擇容器
+    - 先選擇快速入門的映像檔
 - 設定應用程式環境變數(for docker)
-    - 設定`REGISTRY_USERNAME`為docker儲存庫登入的使用者
-    - 設定`REGISTRY_PASSWORD`為docker儲存庫登入的密碼(GitHub帳號設定的PAT)
+    - 設定`DOCKER_REGISTRY_SERVER_URL`為docker儲存庫位置 ex. https://gcr.io
+    - 設定`DOCKER_REGISTRY_USERNAME`為docker儲存庫登入的使用者
+    - 設定`DOCKER_REGISTRY_PASSWORD`為docker儲存庫登入的密碼(GitHub帳號設定的PAT)
 - 設定應用程式環境變數(for ASP.NET Core)
     - 給程式使用的 例如: `ASPNETCORE_ENVIRONMENT=Development`)
 - 在Azure上取得登入憑證，並加入GitHub Action中的Secret給Workflow使用
@@ -38,6 +40,3 @@ az ad sp create-for-rbac --name "myApp" --role contributor --scopes /subscriptio
 - 登入Azure (使用先設定於Secrets中的登入憑證)
 - 佈署App Service (推送image到App Service中)
 - 登出Azure
-
-
---測試PR
