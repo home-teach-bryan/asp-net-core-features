@@ -1,9 +1,4 @@
-﻿env:
-  AZURE_WEBAPP_NAME: asp-net-core-feature
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      
-  DOTNET_VERSION: '8'                 
-
-name: GitHub Action CI/CD Workflow
+﻿name: GitHub Action CI/CD Workflow
 on: 
     push:
         branches:
@@ -39,9 +34,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
-
-      - name: echo 
-        run: echo "$secrets.TOKEN"
 
       - name: Build and Push
         uses: docker/build-push-action@v6
