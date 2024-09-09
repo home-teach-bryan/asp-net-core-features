@@ -42,7 +42,7 @@ jobs:
         with:
             context: ./AspNetCoreSampleFeature/AspNetCoreFeature
             push: true
-            tags: ghcr.io/home-teach-bryan/asp-net-ore-feature:latest
+            tags: ghcr.io/home-teach-bryan/asp-net-core-feature:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'aspnetcorefeature'
-          images: 'ghcr.io/home-teach-bryan/asp-net-ore-feature:latest'
+          images: 'ghcr.io/home-teach-bryan/asp-net-core-feature:latest'
       - name: Azure logout
         run: |
           az logout
