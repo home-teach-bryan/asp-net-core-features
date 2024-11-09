@@ -40,3 +40,19 @@ az ad sp create-for-rbac --name "myApp" --role contributor --scopes /subscriptio
 - 登入Azure (使用先設定於Secrets中的登入憑證)
 - 佈署App Service (推送image到App Service中)
 - 登出Azure
+
+
+# 透過Jenkins佈署IIS on Windows
+
+## Web Server
+
+1. 安裝IIS
+2. 安裝WebDeploy
+3. 安裝ASP.NET Core Hosting Bundle(執行asp.net core的runtime環境) 
+
+## Jenkins
+1. 安裝Jenkins管理介面
+2. 安裝JDK 17 以上(for Jenkins使用)
+3. 安裝Vistual Studio Build Tools 
+4. 安裝.NET Core SDK
+5. 安裝git 
