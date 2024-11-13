@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// 新增產品
+    /// 新增產品測試
     /// </summary>
     /// <param name="request"></param>
     /// <returns>回傳執行結果</returns>
