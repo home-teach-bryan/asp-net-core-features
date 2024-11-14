@@ -57,3 +57,27 @@ az ad sp create-for-rbac --name "myApp" --role contributor --scopes /subscriptio
 4. 安裝.NET Core SDK
 5. 安裝Git
 6. 安裝Web Deploy
+7. 進入Jenkins後 安裝Plugins
+    - 安裝MSBuild 
+    - 安裝.NET Core SDK Support
+    - 安裝完重新啟動服務 (Windows Services)
+
+### Build Step
+1. 設定建置的專案路徑
+AspNetCoreSampleFeature/AspNetCoreFeature/AspNetCoreFeature.csproj
+
+2. 設定測試的專案路徑
+AspNetCoreSampleFeature/AspNetCoreFeatureTests/AspNetCoreFeatureTests/AspNetCoreFeatureTests.csproj
+
+3. 設定佈署(dotnet publish) msbuild properties的參數
+
+- PublishProfile=IISProfile.pubxml  (專案內的發布檔)
+- AllowUntrustedCertificate=true (允許憑證)
+- Username={{UserName}}  (登入Windows的帳號)
+- Password={{Password}}  (登入Windows的密碼)
+- MsDeployServiceUrl={{Remote IIS Server IP}}  (佈署IIS的機器IP)
+- DeployIisAppPath={{IIS Application Name}}  (IIS的WebSite名稱)
+- EnvironemntName={{EnvironemntName}} (環境名稱 搭配appsettings.json使用的)
+
+
+
