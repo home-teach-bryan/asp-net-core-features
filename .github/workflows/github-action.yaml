@@ -54,7 +54,7 @@ jobs:
       - name: Deploy Image to Azure Web App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'aspnetcorefeature'
+          app-name: 'AspNetCoreFeature'
           images: 'ghcr.io/home-teach-bryan/asp-net-core-feature:latest'
     
       - name: Azure logout
